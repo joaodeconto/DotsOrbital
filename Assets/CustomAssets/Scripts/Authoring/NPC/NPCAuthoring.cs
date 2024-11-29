@@ -15,7 +15,7 @@ public class NPCAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new NPCData
             {
-                random = new Unity.Mathematics.Random(1),
+                random = new Unity.Mathematics.Random(2),
                 currentTile = int2.zero,
             });
             AddComponent(entity, new NPCMovement

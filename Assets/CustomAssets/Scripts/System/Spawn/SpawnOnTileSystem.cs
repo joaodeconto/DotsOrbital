@@ -42,6 +42,7 @@ partial struct SpawnOnTileSystem : ISystem
             availableTiles.Dispose();
             return;
         }
+
         foreach ((
             RefRO<SpawnRequest> requestData,
             Entity requestEntity)
@@ -60,8 +61,9 @@ partial struct SpawnOnTileSystem : ISystem
 
             ecb.SetComponent(npc, new NPCData
             {
+                random = new(_random.NextUInt()),
                 currentTile = chosenTileData.tileCoordinates,
-            });
+            });;
 
             ecb.SetComponent(chosenTile, new HexTileData
             {

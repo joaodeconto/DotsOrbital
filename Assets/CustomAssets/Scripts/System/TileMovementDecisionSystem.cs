@@ -6,15 +6,12 @@ using Unity.Transforms;
 
 partial struct TileMovementDecisionSystem : ISystem
 {
-    private Unity.Mathematics.Random _random;
     private ComponentLookup<HexTileData> tileDataLookup;
     private ComponentLookup<LocalTransform> localTransformLookup;
 
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        // Initialize _random outside Burst-compatible code
-        _random = new Unity.Mathematics.Random((uint) 10);
         tileDataLookup = state.GetComponentLookup<HexTileData>(true);
         localTransformLookup = state.GetComponentLookup<LocalTransform>(true);
     }
@@ -24,6 +21,9 @@ partial struct TileMovementDecisionSystem : ISystem
     {
         tileDataLookup.Update(ref state);
         localTransformLookup.Update(ref state);
+
+        double elapsedTime = SystemAPI.Time.ElapsedTime;
+        Random _random = new Random((uint) (1+  (elapsedTime * 10000)));
 
         HexGridSizeData hexGridSizeData = SystemAPI.GetSingleton<HexGridSizeData>();
         EntityCommandBuffer ecb = SystemAPI
@@ -121,8 +121,12 @@ public partial struct NPCMovementJob : IJobEntity
             return;
         }
 
+        
         int randomIndex = RandomGenerator.NextInt(0, validTiles.Length);
         int2 chosenTile = validTiles[randomIndex];
+
+        //UnityEngine.Debug.Log(validTiles.Length + " " + randomIndex);
+
 
         if (TileEntityMap.TryGetValue(chosenTile, out Entity chosenTileEntity))
         {

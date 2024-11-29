@@ -19,7 +19,7 @@ public class UIDotsListener : MonoBehaviour
 
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
-
+/*
     private void Update()
     {
         // Query for UIUpdateEvent entities
@@ -36,4 +36,5 @@ public class UIDotsListener : MonoBehaviour
         spawnedCountText.text = $"Spawned Count: {count}";
         events.Dispose();
     }
+*/
 }
