@@ -4,6 +4,11 @@ using Unity.Entities;
 partial struct SpawnRequestSystem : ISystem
 {
     [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<EntitiesReferences>();
+    }
+        [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         if (UnityEngine.Input.GetMouseButtonDown(1))

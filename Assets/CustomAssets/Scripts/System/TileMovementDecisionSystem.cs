@@ -14,6 +14,7 @@ partial struct TileMovementDecisionSystem : ISystem
     {
         tileDataLookup = state.GetComponentLookup<HexTileData>(true);
         localTransformLookup = state.GetComponentLookup<LocalTransform>(true);
+        state.RequireForUpdate<HexGridSizeData>();
     }
 
     [BurstCompile]
@@ -90,7 +91,16 @@ public partial struct NPCMovementJob : IJobEntity
         int2 currentTile = npcData.currentTile;
         var isEven = currentTile.y % 2 == 0;
         var offsets = isEven ? eastEven : eastOds;
-
+        /*
+        if (TileEntityMap.TryGetValue(currentTile, out Entity currentTileEntity))
+        {
+            Ecb.SetComponent(entityIndex, currentTileEntity, new HexTileData
+            {
+                tileCoordinates = entityIndex,
+                isOccupied = false
+            });
+        }
+        */
         NativeList<int2> neighbors = new NativeList<int2>(Allocator.Temp);
 
         for (int i = 0; i < offsets.Length; i++)
@@ -104,6 +114,7 @@ public partial struct NPCMovementJob : IJobEntity
         }
 
         NativeList<int2> validTiles = new NativeList<int2>(Allocator.Temp);
+
 
         foreach (var neighbor in neighbors)
         {
@@ -122,7 +133,8 @@ public partial struct NPCMovementJob : IJobEntity
         }
 
         
-        int randomIndex = RandomGenerator.NextInt(0, validTiles.Length);
+
+            int randomIndex = RandomGenerator.NextInt(0, validTiles.Length);
         int2 chosenTile = validTiles[randomIndex];
 
         //UnityEngine.Debug.Log(validTiles.Length + " " + randomIndex);
@@ -140,11 +152,13 @@ public partial struct NPCMovementJob : IJobEntity
             npcMovement.isMoving = true;
 
             Ecb.AddComponent<NeedsColorUpdate>(entityIndex, chosenTileEntity);
+          /*
             Ecb.SetComponent(entityIndex, chosenTileEntity, new HexTileData
             {
                 tileCoordinates = chosenTile,
                 isOccupied = true
             });
+        */
         }
 
         neighbors.Dispose();

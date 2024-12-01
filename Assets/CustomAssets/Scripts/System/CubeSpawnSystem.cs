@@ -7,6 +7,12 @@ using Unity.Transforms;
 public partial struct CubeSpawnSystem : ISystem
 {
     [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<EntitiesReferences>();
+    }
+
+        [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         foreach (RefRO<CubeSpawner> cubeSpawner in SystemAPI.Query<RefRO<CubeSpawner>>())

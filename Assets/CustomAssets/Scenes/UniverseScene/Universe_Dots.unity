@@ -306,8 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88be0aaf93b69d446ab0a72dd807d853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lines: 200
-  columns: 200
+  lines: 300
+  columns: 300
   radio: 4
   offset: 0.4
 --- !u!4 &961741439
