@@ -108,7 +108,7 @@ MonoBehaviour:
   active: 1
   mode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   neutralHDRRangeReductionMode:
     m_OverrideState: 0
     m_Value: 2
@@ -151,25 +151,25 @@ MonoBehaviour:
     m_Value: 1
   gaussianStart:
     m_OverrideState: 1
-    m_Value: 259.6
+    m_Value: 567.6
   gaussianEnd:
     m_OverrideState: 1
-    m_Value: 651.4
+    m_Value: 2129.8
   gaussianMaxRadius:
     m_OverrideState: 1
-    m_Value: 0.66
+    m_Value: 0.713
   highQualitySampling:
     m_OverrideState: 1
     m_Value: 1
   focusDistance:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 37.85
   aperture:
     m_OverrideState: 1
     m_Value: 5.6
   focalLength:
     m_OverrideState: 1
-    m_Value: 50
+    m_Value: 211
   bladeCount:
     m_OverrideState: 0
     m_Value: 5
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf1aba9553839d41ae37dd52e9ebcce, type: 3}
   m_Name: MotionBlur
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   mode:
     m_OverrideState: 0
     m_Value: 0

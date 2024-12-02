@@ -731,7 +731,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 6000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -758,14 +758,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6225146, y: 0, z: 0, w: 0.7826082}
+  m_LocalRotation: {x: 0.60876137, y: 0, z: 0, w: 0.7933534}
   m_LocalPosition: {x: 0, y: 100, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 202452360}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 77, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 75, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -822,15 +822,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942566d6d4b39ff4bbd557c6cbf575a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panSpeed: 200
+  panSpeed: 500
   panBorderThickness: 10
-  panLimit: {x: 300, y: 50}
-  zoomSpeed: 200
-  minZoom: 100
-  maxZoom: 400
+  panLimit: {x: 2400, y: 2080}
+  zoomSpeed: 4000
+  minHeight: 10
+  maxHeight: 400
   rotateSpeed: 50
   middleMouseRotateSensitivity: 0.2
-  focusPoint: {fileID: 0}
+  rotationCenter: {x: 0, y: 0, z: 0}
+  minPitchAngle: 10
+  maxPitchAngle: 80
   enableEdgePanning: 1
 --- !u!1 &348449483
 GameObject:
