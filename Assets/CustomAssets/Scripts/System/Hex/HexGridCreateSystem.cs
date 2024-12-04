@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -17,20 +18,22 @@ partial struct HexGridCreateSystem : ISystem
     {
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         HexGridSizeData hexGridSizeData = SystemAPI.GetSingleton<HexGridSizeData>();
-
         Entity hexGridEntity = SystemAPI.GetSingletonEntity<EntitiesReferences>();
 
-        if (hexGridSizeData.spawned)
+        if (hexGridSizeData.mapSpawned)
             return;
 
+        // Allocate with Allocator.Persistent
+        NativeHashMap<int2, bool> occupiedTiles = new NativeHashMap<int2, bool>(
+            hexGridSizeData.mapWidth * hexGridSizeData.mapHeight, Allocator.Persistent);
 
         float3 gridPosition = SystemAPI.GetComponent<LocalTransform>(hexGridEntity).Position;
-        float hexRadius = hexGridSizeData.radius;
+        float hexRadius = hexGridSizeData.tileRadius;
         float hexWidth = hexRadius * 2f;
         float hexHeight = math.sqrt(3) * hexRadius;
 
-        int gridWidth = hexGridSizeData.width;
-        int gridHeight = hexGridSizeData.height;
+        int gridWidth = hexGridSizeData.mapWidth;
+        int gridHeight = hexGridSizeData.mapHeight;
 
         for (int r = 0; r < gridHeight; r++)
         {
@@ -49,7 +52,7 @@ partial struct HexGridCreateSystem : ISystem
                 LocalTransform hexTransform = new LocalTransform
                 {
                     Position = position,
-                    Scale = hexWidth - hexGridSizeData.offset,
+                    Scale = hexWidth - hexGridSizeData.tileOffset,
                 };
 
                 HexTileData tileData = new HexTileData
@@ -58,14 +61,21 @@ partial struct HexGridCreateSystem : ISystem
                     isOccupied = false,
                 };
 
+                occupiedTiles.Add(new int2(q, r), false);
+
                 // Set position and data
                 state.EntityManager.SetComponentData(hexTileEntity, hexTransform);
                 state.EntityManager.SetComponentData(hexTileEntity, tileData);
             }
         }
 
-        hexGridSizeData.spawned = true;
+        state.EntityManager.CreateSingleton(
+            new TileOccupancyData
+            {
+                OccupiedTiles = occupiedTiles
+            });
+
+        hexGridSizeData.mapSpawned = true;
         SystemAPI.SetSingleton(hexGridSizeData);
     }
-
 }

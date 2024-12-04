@@ -9,6 +9,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject shootLightGameObject;
     public GameObject hexTileGameObject;
     public GameObject npcGameObject;
+    public GameObject structureTest;
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -22,6 +23,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 shootlightEntity = GetEntity(authoring.shootLightGameObject, TransformUsageFlags.Dynamic),
                 hexTileEntity = GetEntity(authoring.hexTileGameObject, TransformUsageFlags.Dynamic),
                 npcEntity = GetEntity(authoring.npcGameObject, TransformUsageFlags.Dynamic),
+                structureTestEntity = GetEntity(authoring.structureTest, TransformUsageFlags.Dynamic),
             });;
         }
     }
@@ -35,4 +37,5 @@ public struct EntitiesReferences : IComponentData
     public Entity shootlightEntity;
     public Entity hexTileEntity;
     public Entity npcEntity;
+    public Entity structureTestEntity;
 }

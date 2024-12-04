@@ -43,7 +43,7 @@ partial struct TileMovementDecisionSystem : ISystem
             eastOds[i] = HexGridUtils.EastWestOddOffsets[i];
         }
 
-        NativeParallelHashMap<int2, Entity> tileEntityMap = new NativeParallelHashMap<int2, Entity>(hexGridSizeData.width * hexGridSizeData.height, Allocator.TempJob);
+        NativeParallelHashMap<int2, Entity> tileEntityMap = new NativeParallelHashMap<int2, Entity>(hexGridSizeData.mapWidth * hexGridSizeData.mapHeight, Allocator.TempJob);
 
         var buildMapJob = new BuildTileEntityMapJob
         {
@@ -106,8 +106,8 @@ public partial struct NPCMovementJob : IJobEntity
         for (int i = 0; i < offsets.Length; i++)
         {
             int2 neighbor = currentTile + offsets[i];
-            if (neighbor.x >= 0 && neighbor.x <= HexGridSizeData.width &&
-                neighbor.y >= 0 && neighbor.y <= HexGridSizeData.height)
+            if (neighbor.x >= 0 && neighbor.x <= HexGridSizeData.mapWidth &&
+                neighbor.y >= 0 && neighbor.y <= HexGridSizeData.mapHeight)
             {
                 neighbors.Add(neighbor);
             }

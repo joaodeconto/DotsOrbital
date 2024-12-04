@@ -154,6 +154,7 @@ MonoBehaviour:
   shootLightGameObject: {fileID: 0}
   hexTileGameObject: {fileID: 9140891344574513567, guid: 32b6b31b8a4719045bb4dbbf1fc8c306, type: 3}
   npcGameObject: {fileID: 5461486292109459521, guid: 61b6cbf3be6ea6e498d9f12d52f6c900, type: 3}
+  structureTest: {fileID: 3229248053766771296, guid: 2326f927f53c1c241b7160a31bde2592, type: 3}
 --- !u!4 &160478105
 Transform:
   m_ObjectHideFlags: 0
@@ -308,7 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lines: 300
   columns: 300
-  radio: 4
+  radius: 4
   offset: 0.4
 --- !u!4 &961741439
 Transform:

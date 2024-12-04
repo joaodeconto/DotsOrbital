@@ -14,7 +14,7 @@ partial struct NPCMovementSystem : ISystem
             DeltaTime = SystemAPI.Time.DeltaTime
         };
 
-        state.Dependency = movementJob.Schedule(state.Dependency);
+        //state.Dependency = movementJob.Schedule(state.Dependency);
     }
 }
 

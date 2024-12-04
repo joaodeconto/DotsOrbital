@@ -5,7 +5,7 @@ public class HexGridSizeAuthoring : MonoBehaviour
 {
     public int lines;
     public int columns;
-    public float radio;
+    public float radius;
     public float offset;
 
     public class Baker : Baker<HexGridSizeAuthoring>
@@ -15,10 +15,10 @@ public class HexGridSizeAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new HexGridSizeData
             {
-                width = authoring.lines,
-                height = authoring.columns,
-                radius = authoring.radio,
-                offset = authoring.offset,
+                mapWidth = authoring.lines,
+                mapHeight = authoring.columns,
+                tileRadius = authoring.radius,
+                tileOffset = authoring.offset,
             });
         }
     }
@@ -26,9 +26,9 @@ public class HexGridSizeAuthoring : MonoBehaviour
 
 public struct HexGridSizeData : IComponentData
 {
-    public int width;
-    public int height;
-    public float radius;
-    public float offset;
-    public bool spawned;
+    public int mapWidth;
+    public int mapHeight;
+    public float tileRadius;
+    public float tileOffset;
+    public bool mapSpawned;
 }
