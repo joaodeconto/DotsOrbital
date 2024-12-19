@@ -15,7 +15,9 @@ public class BuildingRequestDataAuthoring : MonoBehaviour
             AddComponent(entity, new BuildingRequestData
             {
                 StructurePrefab = authoring.StructurePrefab,
-            });
+                GridPosition = int2.zero,
+                Size = 1
+            }) ;
         }
     }
 }

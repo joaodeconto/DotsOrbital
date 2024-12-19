@@ -1,5 +1,4 @@
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -13,28 +12,78 @@ public partial struct StructurePlacementSystem : ISystem
     {
         state.RequireForUpdate<HexGridSizeData>();
         state.RequireForUpdate<MouseInput>();
-        state.RequireForUpdate<TileOccupancyData>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
-    { 
-        var tileRadius= SystemAPI.GetSingleton<HexGridSizeData>().tileRadius;
+    {
+        var tileRadius = SystemAPI.GetSingleton<HexGridSizeData>().tileRadius;
         var mouseInput = SystemAPI.GetSingleton<MouseInput>();
-        var occupancyMap = SystemAPI.GetSingleton<TileOccupancyData>().OccupiedTiles;
 
-        // Convert mouse position to hex coordinates
-        int2 hexCoords = WorldToHex(mouseInput.Position, tileRadius);
 
-        // Check if tile is within grid bounds
-        if (!IsWithinGridBounds(hexCoords))
-            return;
+        EntityCommandBuffer ecb = SystemAPI
+        .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
+        .CreateCommandBuffer(state.WorldUnmanaged);
 
-        // Check tile occupancy
-        bool isOccupied = occupancyMap.TryGetValue(hexCoords, out bool occupied) && occupied;
+        foreach ((
+            RefRO<BuildingRequestData> requestData,
+            RefRW<LocalTransform> requestTransform,
+            Entity requestEntity)
+            in SystemAPI.Query<
+               RefRO<BuildingRequestData>,
+               RefRW<LocalTransform>>().WithEntityAccess())
+        {
+            // Convert mouse position to hex coordinates
+            int2 hexCoords = WorldToHex(mouseInput.Position, tileRadius);
+            //Debug.Log("found builkding request " + hexCoords);
+            // Check if tile is within grid bounds
+            if (!IsWithinGridBounds(hexCoords))
+                return;
 
-        // Update placement visual entity
+            bool isOccupied = false;
+            float3 tilePosition = new(0, 0, 0);
+            foreach ((
+                RefRO<LocalTransform> tileTransform,
+                RefRO<HexTileData> tileData,
+                Entity tileEntity)
+                in SystemAPI.Query<
+                    RefRO<LocalTransform>,
+                    RefRO<HexTileData>>()
+                    .WithEntityAccess())
+            {
+                if (math.all(tileData.ValueRO.tileCoordinates == hexCoords))
+                {
+                    isOccupied = tileData.ValueRO.isOccupied;
+                    tilePosition += tileTransform.ValueRO.Position;
+                    float3 tileCenterPosition = HexToWorld(hexCoords, tileRadius);
+                    requestTransform.ValueRW.Position = tileCenterPosition;
+                    requestTransform.ValueRW.Scale = tileRadius *2 ;
 
+
+                    Debug.Log(tileData.ValueRO.tileCoordinates + " " + hexCoords + " position " + tilePosition);
+
+
+                    //ecb.SetComponent(requestEntity, LocalTransform.FromPosition(tilePosition));
+                    //ecb.SetComponent(requestEntity, LocalTransform.FromScale(tileRadius*2));
+                    return;
+                }
+            }
+
+
+
+            /*
+            // Instantiate the structure entity
+            var structurePrefab = SystemAPI.GetSingleton<EntitiesReferences>().structureTestEntity;
+            Entity structureEntity = ecb.Instantiate(structurePrefab);
+            */
+
+            // Set structure position
+
+            //ecb.AsParallelWriter();
+            //ecb.Dispose();
+        }
+
+        /*
         foreach ((
             RefRO<PlacementVisualTag> visualTag,
             RefRW<PlacementVisualData> visualData,
@@ -45,39 +94,14 @@ public partial struct StructurePlacementSystem : ISystem
         {
             tagTransform.ValueRW.Position = HexToWorld(hexCoords, tileRadius);
             visualData.ValueRW.IsValidPlacement = !isOccupied;
-
         }
-
-        // Handle placement confirmation input
-        if (Input.GetMouseButtonDown(0) && !isOccupied)
-        {
-            EntityCommandBuffer ecb = SystemAPI
-             .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
-             .CreateCommandBuffer(state.WorldUnmanaged);
-
-            // Instantiate the structure entity
-            var structurePrefab = SystemAPI.GetSingleton<EntitiesReferences>().structureTestEntity;
-            Entity structureEntity = ecb.Instantiate(structurePrefab);
-
-            // Set structure position
-            ecb.SetComponent(structureEntity,
-                new LocalTransform { Position = HexToWorld(hexCoords, tileRadius) });
-
-            // Update occupancy map
-            occupancyMap[hexCoords] = true;
-
-            ecb.AsParallelWriter();
-            //ecb.Dispose();
-        }
+        */
     }
 
     private int2 WorldToHex(float3 position, float hexRadius)
     {
-        float hexWidth = hexRadius * 2f;
-        float hexHeight = Mathf.Sqrt(3f) * hexRadius;
-
-        float q = (Mathf.Sqrt(3f) / 3f * position.x - 1f / 3f * position.z) / hexRadius;
-        float r = (2f / 3f * position.z) / hexRadius;
+        float q = 2f / 3f * position.x / hexRadius;
+        float r = ((-1f / 3f * position.x) + (math.sqrt(3f) / 3f * position.z)) / hexRadius;
         return HexRound(q, r);
     }
 
@@ -87,13 +111,13 @@ public partial struct StructurePlacementSystem : ISystem
         float z = r;
         float y = -x - z;
 
-        int rx = Mathf.RoundToInt(x);
-        int ry = Mathf.RoundToInt(y);
-        int rz = Mathf.RoundToInt(z);
+        int rx = (int)math.round(x);
+        int ry = (int)math.round(y);
+        int rz = (int)math.round(z);
 
-        float x_diff = Mathf.Abs(rx - x);
-        float y_diff = Mathf.Abs(ry - y);
-        float z_diff = Mathf.Abs(rz - z);
+        float x_diff = math.abs(rx - x);
+        float y_diff = math.abs(ry - y);
+        float z_diff = math.abs(rz - z);
 
         if (x_diff > y_diff && x_diff > z_diff)
         {
@@ -113,8 +137,8 @@ public partial struct StructurePlacementSystem : ISystem
 
     private float3 HexToWorld(int2 hexCoords, float hexRadius)
     {
-        float x = hexRadius * Mathf.Sqrt(3f) * (hexCoords.x + hexCoords.y / 2f);
-        float z = hexRadius * 1.5f * hexCoords.y;
+        float x = hexRadius * 3f / 2f * hexCoords.x;
+        float z = hexRadius * math.sqrt(3f) * (hexCoords.y + hexCoords.x / 2f);
         return new float3(x, 0f, z);
     }
 

@@ -23,11 +23,8 @@ partial struct HexGridCreateSystem : ISystem
         if (hexGridSizeData.mapSpawned)
             return;
 
-        // Allocate with Allocator.Persistent
-        NativeHashMap<int2, bool> occupiedTiles = new NativeHashMap<int2, bool>(
-            hexGridSizeData.mapWidth * hexGridSizeData.mapHeight, Allocator.Persistent);
-
         float3 gridPosition = SystemAPI.GetComponent<LocalTransform>(hexGridEntity).Position;
+
         float hexRadius = hexGridSizeData.tileRadius;
         float hexWidth = hexRadius * 2f;
         float hexHeight = math.sqrt(3) * hexRadius;
@@ -61,19 +58,11 @@ partial struct HexGridCreateSystem : ISystem
                     isOccupied = false,
                 };
 
-                occupiedTiles.Add(new int2(q, r), false);
-
                 // Set position and data
                 state.EntityManager.SetComponentData(hexTileEntity, hexTransform);
                 state.EntityManager.SetComponentData(hexTileEntity, tileData);
             }
         }
-
-        state.EntityManager.CreateSingleton(
-            new TileOccupancyData
-            {
-                OccupiedTiles = occupiedTiles
-            });
 
         hexGridSizeData.mapSpawned = true;
         SystemAPI.SetSingleton(hexGridSizeData);

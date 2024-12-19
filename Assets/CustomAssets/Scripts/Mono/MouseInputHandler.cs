@@ -28,7 +28,9 @@ public class MouseInputHandler : MonoBehaviour
             entityManager.SetComponentData(mouseInputEntity, new MouseInput
             {
                 Position = mouseWorldPosition
+                
             });
+            //Debug.Log(mouseWorldPosition.ToString()+ " mouse posiyion");
         }
     }
 }
